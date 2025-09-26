@@ -1,0 +1,83 @@
+name: Deploy lilbarberia
+
+on:
+    push:
+        branches:
+            - main
+            - dev
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan-apply:
+    runs-on: ubuntu-latest
+    environment: LILBARBERIA
+    defaults:
+      run:
+        working-directory: terraform
+
+    env:
+      TF_IN_AUTOMATION: "true"
+      AWS_DEFAULT_REGION: us-east-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS (Access Keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform Init (remote state)
+        run: terraform init -backend-config=backend.hcl
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Select/Create Workspace
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            WS="prod"
+          else
+            WS="dev"
+          fi
+          echo "Using workspace: $WS"
+          terraform workspace select "$WS" || terraform workspace new "$WS"
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            STAGE="prod"
+          else
+            STAGE="dev"
+          fi
+          terraform plan -lock-timeout=5m -var "stage_name=${STAGE}" -out=tfplan
+
+      - name: Upload plan (PR only)
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ github.ref_name }}
+          path: terraform/tfplan
+
+      - name: Terraform Apply (push only)
+        if: github.event_name == 'push'
+        run: terraform apply -input=false -auto-approve tfplan
