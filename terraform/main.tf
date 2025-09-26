@@ -34,6 +34,8 @@ resource "aws_dynamodb_table" "customers" {
    }
 }
 
+
+
 # ===== Definición de lambdas =====
 variable "lambdas" {
   description = "Configuración de lambdas"
