@@ -1,4 +1,4 @@
-bucket         = "barberia-tfstate"
+bucket         = "lilbarberia-tfstate"
 key            = "terraform/terraform.tfstate"
 region         = "us-east-1"
 dynamodb_table = "barberia-terraform-locks"
