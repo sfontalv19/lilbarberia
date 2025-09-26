@@ -4,7 +4,11 @@ terraform {
     aws     = { source = "hashicorp/aws", version = ">= 5.0" }
     archive = { source = "hashicorp/archive", version = ">= 2.4" }
   }
-  # backend "s3" {}  # si usas remote state
+    backend "s3"{
+        bucket = "lilbarberia-terraform-state"
+        key    = "global/s3/terraform.tfstate"
+        region = "us-east-1"
+    }
 }
 
 provider "aws" {
@@ -23,7 +27,9 @@ resource "aws_dynamodb_table" "customers" {
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "id_customer"
 
-  attribute { name = "id_customer" type = "S" }
+  attribute { 
+   name = "id_customer"
+   type = "S" }
 }
 
 # ===== Definición de lambdas =====
