@@ -29,7 +29,9 @@ resource "aws_dynamodb_table" "customers" {
 
   attribute { 
    name = "id_customer"
-   type = "S" }
+   type = "S" 
+   
+   }
 }
 
 # ===== Definición de lambdas =====
