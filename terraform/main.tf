@@ -1,18 +1,36 @@
 terraform {
-  required_version = ">= 1.6.0"
-  required_providers {
-    aws     = { source = "hashicorp/aws", version = ">= 5.0" }
-    archive = { source = "hashicorp/archive", version = ">= 2.4" }
+  required_version = ">= 1.4.2"
+
+  backend "s3" {
+    bucket  = "silviobarberia-app"
+    key     = "terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = true
+    profile = "lilbarberia"
   }
-    backend "s3"{
-        bucket = "lilbarberia-terraform-state"
-        key    = "global/s3/terraform.tfstate"
-        region = "us-east-1"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
+    awscc = {
+      source  = "hashicorp/awscc"
+      version = "0.53.0" 
+    }
+  }
 }
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = var.aws_profile
+
+  default_tags {
+    tags = {
+      Project = var.project
+      Owner   = "sergio"
+    }
+  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -54,13 +72,7 @@ variable "lambdas" {
       timeout = 15
       route   = "POST /signup"
     }
-    booking = {
-      file    = "../lambdas/booking.py"
-      handler = "booking.handler"
-      memory  = 256
-      timeout = 15
-      route   = "POST /booking"
-    }
+
   }
 }
 
@@ -136,10 +148,7 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      AWS_REGION           = var.region
-      COGNITO_USER_POOL_ID = var.cognito_user_pool_id
-      COGNITO_CLIENT_ID    = var.cognito_client_id
-      CUSTOMERS_TABLE_NAME = aws_dynamodb_table.customers.name
+      
     }
   }
 }

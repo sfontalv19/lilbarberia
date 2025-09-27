@@ -6,7 +6,7 @@
       "Action": [
         "s3:ListBucket"
       ],
-      "Resource": "arn:aws:s3:::lilbarberia-tfstate"
+      "Resource": "arn:aws:s3:::silviobarberia-terraform-state-307946681447"
     },
     {
       "Effect": "Allow",
@@ -15,7 +15,7 @@
         "s3:PutObject",
         "s3:DeleteObject"
       ],
-      "Resource": "arn:aws:s3:::lilbarberia-tfstate/*"
+      "Resource": "arn:aws:s3:::silviobarberia-terraform-state-307946681447/*"
     },
     {
       "Effect": "Allow",
@@ -24,7 +24,7 @@
         "dynamodb:PutItem",
         "dynamodb:DeleteItem"
       ],
-      "Resource": "arn:aws:dynamodb:us-east-1:221671159513:table/barberia-terraform-locks"
+      "Resource": "arn:aws:dynamodb:us-east-1:307946681447:table/barberia-terraform-locks"
     }
   ]
 }
