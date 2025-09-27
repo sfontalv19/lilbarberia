@@ -42,7 +42,7 @@ jobs:
           terraform_version: 1.9.8
 
       - name: Terraform Init (remote state)
-        run: terraform init -backend-config=backend.hcl
+        run: terraform init 
 
       - name: Terraform Format
         run: terraform fmt -check
