@@ -8,3 +8,6 @@ __pycache__/
 lambda_src.zip
 /.env
 .env
+terraform/terraform.tfvars
+terraform/ variables.tf
+terraform/build

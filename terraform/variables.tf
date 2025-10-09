@@ -1,4 +1,4 @@
-variable "region" {
+variable "region_aws" {
   type    = string
   default = "us-east-1"
 }
@@ -20,13 +20,42 @@ variable "stage_name" {
     default     = "dev"
 }
 
-variable "cognito_user_pool_id" {
-  description = "ID del User Pool de Cognito"
-  type        = string
-  
+## cognito 
+
+variable "deploy_id" {
+    description = "Deploy_id"
+    type = string
 }
 
-variable "cognito_client_id"{
-    description = "ID del App Client de Cognito"
-    type        = string
+variable "environment" {
+    description = "Environment"
+    type = string
+
+}
+
+variable "cognito_user_pool_arn"{
+    description = "cognito_user_pool_arn"
+    type = string
+}
+
+variable "cognito_user_pool_name" {
+    description = "cognito_user_pool_name"
+    type = string
+    default = "lilbarberia"
+}
+
+variable "aws_account_id" {
+    description = "AWS account for id for resource arns"
+    type = string
+    default = "307946681447"
+
+}
+
+variable "dynamodb_tables" {
+    type = map(string)
+    description = "map nomber logic lambda"
+    default = {
+        users = "users"
+        auth = "auth"
+    }
 }
