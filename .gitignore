@@ -11,3 +11,4 @@ lambda_src.zip
 terraform/terraform.tfvars
 terraform/ variables.tf
 terraform/build
+terraform/variable
