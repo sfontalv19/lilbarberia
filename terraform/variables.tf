@@ -30,6 +30,7 @@ variable "deploy_id" {
 variable "environment" {
   description = "Environment"
   type        = string
+  default.    = "prod"
 
 }
 
