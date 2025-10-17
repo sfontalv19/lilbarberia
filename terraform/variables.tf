@@ -36,6 +36,8 @@ variable "environment" {
 variable "cognito_user_pool_arn" {
   description = "cognito_user_pool_arn"
   type        = string
+  default     = "arn:aws:cognito-idp:us-east-1:000000000000:userpool/dummy"
+
 }
 
 variable "cognito_user_pool_name" {
