@@ -1,4 +1,4 @@
-name: Deploy silviobarberia App
+name: Deploy lilbarberia
 
 on:
   push:
@@ -19,16 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       # 🔑 Configura credenciales AWS (usa los SECRETS del repo)
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            us-east-1
-
-      # 🧩 Verifica identidad AWS (opcional pero útil)
-      - name: Verify AWS Identity
-        run: aws sts get-caller-identity
+    
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -36,22 +27,23 @@ jobs:
           terraform_version: 1.4.2
 
       - name: Terraform Init
-        run: terraform init -reconfigure -input=false
+        run: |
+          cd terraform 
+          terraform init
 
-      # --- Dev ---
-      - name: Terraform Plan for Dev
-        if: github.ref == 'refs/heads/dev'
-        run: terraform plan -var "stage_name=dev"
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+            AWS_DEFAULT_REGION: us-east-1
+      #main
 
-      - name: Terraform Apply for Dev
-        if: github.ref == 'refs/heads/dev'
-        run: terraform apply -var "stage_name=dev" -auto-approve
-
-      # --- Prod ---
-      - name: Terraform Plan for Prod
+      - name: terraform Apply for prod
         if: github.ref == 'refs/heads/main'
-        run: terraform plan -var "stage_name=prod"
+        run: |
+          cd terraform
+          terraform apply -var "stage_name=prod" -auto-approve
 
-      - name: Terraform Apply for Prod
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -var "stage_name=prod" -auto-approve
+        env: 
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+            AWS_DEFAULT_REGION: us-east-1
