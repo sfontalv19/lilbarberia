@@ -3,59 +3,59 @@ variable "region_aws" {
   default = "us-east-1"
 }
 variable "aws_profile" {
-    type = string 
-    default= "lilbarberia"
+  type    = string
+  default = "lilbarberia"
 }
 
 
 variable "project" {
-    description = "Nombre del proyecto"
-    type        = string
-    default     = "lilbarberia"
+  description = "Nombre del proyecto"
+  type        = string
+  default     = "lilbarberia"
 }
 
 variable "stage_name" {
-    description = "Nombre del entorno"
-    type        = string
-    default     = "dev"
+  description = "Nombre del entorno"
+  type        = string
+  default     = "dev"
 }
 
 ## cognito 
 
 variable "deploy_id" {
-    description = "Deploy_id"
-    type = string
+  description = "Deploy_id"
+  type        = string
 }
 
 variable "environment" {
-    description = "Environment"
-    type = string
+  description = "Environment"
+  type        = string
 
 }
 
-variable "cognito_user_pool_arn"{
-    description = "cognito_user_pool_arn"
-    type = string
+variable "cognito_user_pool_arn" {
+  description = "cognito_user_pool_arn"
+  type        = string
 }
 
 variable "cognito_user_pool_name" {
-    description = "cognito_user_pool_name"
-    type = string
-    default = "lilbarberia"
+  description = "cognito_user_pool_name"
+  type        = string
+  default     = "lilbarberia"
 }
 
 variable "aws_account_id" {
-    description = "AWS account for id for resource arns"
-    type = string
-    default = "307946681447"
+  description = "AWS account for id for resource arns"
+  type        = string
+  default     = "307946681447"
 
 }
 
 variable "dynamodb_tables" {
-    type = map(string)
-    description = "map nomber logic lambda"
-    default = {
-        users = "users"
-        auth = "auth"
-    }
+  type        = map(string)
+  description = "map nomber logic lambda"
+  default = {
+    users = "users"
+    auth  = "auth"
+  }
 }

@@ -15,7 +15,7 @@ terraform {
     }
     awscc = {
       source  = "hashicorp/awscc"
-      version = "0.53.0" 
+      version = "0.53.0"
     }
   }
 }
@@ -43,7 +43,7 @@ data "aws_partition" "current" {}
 data "aws_iam_policy_document" "lambda_combined_barberia" {
   # Permisos de logs (para que Lambda cree/uses sus log groups/streams)
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "lambda_combined_barberia" {
 
   # Ejemplo: permisos mínimos para tu tabla DynamoDB de users
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "dynamodb:PutItem",
       "dynamodb:GetItem",
@@ -65,7 +65,7 @@ data "aws_iam_policy_document" "lambda_combined_barberia" {
       "dynamodb:Scan"
     ]
     resources = [
-      module.dynamodb.users_table_arn  # ajusta al output real de tu módulo
+      module.dynamodb.users_table_arn # ajusta al output real de tu módulo
     ]
   }
 
@@ -91,23 +91,23 @@ resource "aws_iam_role_policy_attachment" "lambda_combined_attach_barberia" {
 
 #cognito
 
-module "cognito"{
-  source = "./modules/cognito"
-  environment = var.environment
-  deploy_id = var.deploy_id
-  cognito_user_pool_arn = module.cognito.user_pool_arn
+module "cognito" {
+  source                 = "./modules/cognito"
+  environment            = var.environment
+  deploy_id              = var.deploy_id
+  cognito_user_pool_arn  = module.cognito.user_pool_arn
   cognito_user_pool_name = var.cognito_user_pool_name
-  region = var.region_aws
+  region                 = var.region_aws
 }
 
 
 # dynamodb
 
 module "dynamodb" {
-  source = "./modules/dynamodb"
-  environment = var.environment
-  deploy_id = var.deploy_id
-  cognito_user_pool_arn = module.cognito.user_pool_arn
+  source                 = "./modules/dynamodb"
+  environment            = var.environment
+  deploy_id              = var.deploy_id
+  cognito_user_pool_arn  = module.cognito.user_pool_arn
   cognito_user_pool_name = var.cognito_user_pool_name
 
 }
