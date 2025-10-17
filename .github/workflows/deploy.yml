@@ -37,7 +37,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           cd terraform
-          terraform apply -var "stage_name=prod" -var "deploy_id=lilbarberia" -auto-approve -input= false
+          terraform apply -var "stage_name=prod" -var "deploy_id=lilbarberia" -auto-approve -input=false
 
         env: 
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
