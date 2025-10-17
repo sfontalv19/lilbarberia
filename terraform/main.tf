@@ -95,7 +95,6 @@ module "cognito" {
   source                 = "./modules/cognito"
   environment            = var.environment
   deploy_id              = var.deploy_id
-  cognito_user_pool_arn  = module.cognito.user_pool_arn
   cognito_user_pool_name = var.cognito_user_pool_name
   region                 = var.region_aws
 }

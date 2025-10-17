@@ -19,11 +19,7 @@ variable "cognito_user_pool_name" {
     description = "cognito_user_pool_name"
 }
 
-variable "cognito_user_pool_arn"{
-    type = string
-    description = "cognito_user_pool_arn"
-    
-}
+
 variable "callback_urls" {
     type = list(string)
     default = ["https://tudominio.com/callback"]

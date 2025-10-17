@@ -1,5 +1,6 @@
 resource "aws_cognito_user_pool" "barberia"{
     name = "${var.cognito_user_pool_name}_${var.environment}"
+    mfa_configuration = "OFF"
 
     
 
