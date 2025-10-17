@@ -137,7 +137,9 @@ resource "aws_lambda_function" "lambdas"{
 
     environment{
         variables = {
-            DYNAMODB_TABLE = "${var.deploy_id}_${var.environment}_${lookup(var.dynamodb_tables, split("/", each.value)[0], "NO_DYNAMODB_TABLE")}"
+            DYNAMODB_USERS_TABLE = aws_dynamodb_table_users.name
+            DYNAMODB_APPOINTMENTS_TABLE = aws_dynamodb_table_appointmets.name
+            DYNAMODB_SERVICES_TABLE = aws_dynamodb_table_services.name
             COGNITO_CLIENT_ID = module.cognito.app_client_id
             COGNITO_USER_POOL_ID = module.cognito.user_pool_id
             ENVIROMENT = var.environment
