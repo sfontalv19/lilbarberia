@@ -48,7 +48,7 @@ schema {
 
 schema{
   name = "role"
-  attribute_data_type = "string"
+  attribute_data_type = "String"
   required = false
   mutable = true
 }
