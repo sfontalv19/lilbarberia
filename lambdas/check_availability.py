@@ -34,7 +34,7 @@ def handler (event, context):
         # validar formato de fecha
 
         try:
-            date_obj = datetime.strptime(date_str, "%y-%m-%d"). date()
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d"). date()
         except ValueError:
             return response (400, {"error": "formato de fecha invalido"})
         

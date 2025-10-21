@@ -46,6 +46,13 @@ schema {
     
 }
 
+schema{
+  name = "role"
+  attribute_data_type = "string"
+  required = false
+  mutable = true
+}
+
 schema {
     name = "client"
     attribute_data_type = "String"

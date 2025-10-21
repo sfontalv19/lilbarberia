@@ -31,14 +31,18 @@ def handler(event, context):
         
 
         body = json.loads (event ["body"])
-        user_id = body.get("userId")
+        user_id = None
 
-        if not user_id:
-             claims =event.get ("requestContext", {}).get("authorizer", {}).get("claims", {})
+        claims = event.get("RequestContext", {}).get("authorizer", ()).get("claims", {})
+        if claims:
              user_id = claims.get("sub")
 
         if not user_id:
-             return response( {"error": "no se encontro el usurio autenticado"})     
+             user_id= body.get("user_id")
+
+        if not user_id:
+             return(response(401,{"error": "no se encotro usuario autenticado"}))                   
+        
 
 
 

@@ -12,6 +12,8 @@ default_headers = {
     "Access-Control-Allow-Headers": "Content-Type,Authorization"
 }
 
+### mostrar la lista de servicios que brinda la barberia
+
 
 def handler(event, context):
 
