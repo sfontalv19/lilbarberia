@@ -92,7 +92,13 @@ locals {
     "signup",
     "signin",
     "confirmSignup",
-    "create_appointment"
+    "create_appointment",
+    "admin_list_appointments",
+    "cancel_appointments",
+    "check_availability",
+    "list_appointments",
+    "list_services",
+    "update_appointments_status"
   ]
 }
 

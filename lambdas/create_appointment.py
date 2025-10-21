@@ -31,7 +31,17 @@ def handler(event, context):
         
 
         body = json.loads (event ["body"])
-        user_id = body.get("user_id")
+        user_id = body.get("userId")
+
+        if not user_id:
+             claims =event.get ("requestContext", {}).get("authorizer", {}).get("claims", {})
+             user_id = claims.get("sub")
+
+        if not user_id:
+             return response( {"error": "no se encontro el usurio autenticado"})     
+
+
+
         service_id = body.get("service_id")
         date_str = body.get("date")
         hour_str = body.get ("hour")
@@ -59,8 +69,6 @@ def handler(event, context):
         if not is_valid_time(date_obj, hour_obj):
             return response (400, {"error": "la hora selecionada esta fuera del horario"})
 
-
-
         conflict = table_appointments.scan(
             FilterExpression = Attr("date").eq(date_str) & Attr("hour").eq(hour_str) & Attr("status").eq("scheduled")
         )
@@ -70,7 +78,6 @@ def handler(event, context):
         
 
         # crear cita
-
 
         appointment_id = f"APT#{uuid.uuid4().hex[:8].upper()}"
         created_at = datetime.now().strftime("%Y-%m-%dT%H:%M:%S-05:00")
