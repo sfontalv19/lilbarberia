@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+import jwt
 from boto3.dynamodb.conditions import Attr
 
 dynamodb = boto3.resource("dynamodb")
@@ -15,34 +16,20 @@ default_headers = {
 
 def handler(event, context):
     try:
-        print("DEBUG: Event recibido:", event)
+        print("DEBUG: Event recibido:", json.dumps(event))
 
-        # Manejar CORS
+        # Manejo de CORS
         if event.get("httpMethod") == "OPTIONS":
-            return {
-                "statusCode": 200,
-                "headers": default_headers,
-                "body": json.dumps({"message": "CORS ok"})
-            }
+            return response(200, {"message": "CORS ok"})
 
-        # Obtener user_id (puede venir del query o del body)
-        user_id = None
-        if "queryStringParameters" in event and event["queryStringParameters"]:
-            user_id = event["queryStringParameters"].get("user_id")
-
-        # Intentar obtener desde el body (por compatibilidad con pruebas POST)
-        if not user_id and "body" in event and event["body"]:
-            try:
-                body = json.loads(event["body"])
-                user_id = body.get("user_id")
-            except Exception:
-                pass
-
-        # En el futuro, lo obtendremos desde Cognito (claims["sub"])
+        # Obtener el user_id (sub) desde Cognito
+        user_id = get_user_id_from_event(event)
         if not user_id:
-            return response(400, {"error": "user_id requerido"})
+            return response(401, {"error": "Usuario no autenticado o token inválido"})
 
-        # Escanear citas del usuario
+        print(f"DEBUG: user_id autenticado -> {user_id}")
+
+        # Buscar citas del usuario autenticado
         result = table_appointments.scan(
             FilterExpression=Attr("user_id").eq(user_id)
         )
@@ -60,6 +47,29 @@ def handler(event, context):
     except Exception as e:
         print("ERROR:", str(e))
         return response(500, {"error": f"Error interno: {str(e)}"})
+
+
+#  Extraer el sub desde Cognito (funciona con o sin API Gateway Authorizer)
+def get_user_id_from_event(event):
+    # Si viene de API Gateway con authorizer
+    claims = event.get("requestContext", {}).get("authorizer", {}).get("claims", {})
+    if claims and "sub" in claims:
+        return claims["sub"]
+
+    # Si estás probando directo desde Function URL o Postman, decodifica el token manualmente
+    headers = event.get("headers", {})
+    auth_header = headers.get("Authorization") or headers.get("authorization")
+    if not auth_header:
+        return None
+
+    token = auth_header.replace("Bearer ", "").strip()
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        return decoded.get("sub")
+    except Exception as e:
+        print("ERROR al decodificar token:", str(e))
+        return None
+
 
 def response(status, body):
     return {

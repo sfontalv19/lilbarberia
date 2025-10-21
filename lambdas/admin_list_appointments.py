@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+import jwt
 from boto3.dynamodb.conditions import Attr
 
 dynamodb = boto3.resource("dynamodb")
@@ -15,34 +16,33 @@ default_headers = {
 
 def handler(event, context):
     try:
-        print("DEBUG: Event recibido:", event)
+        print("DEBUG: Event recibido:", json.dumps(event))
 
-        # Manejar CORS
         if event.get("httpMethod") == "OPTIONS":
-            return {
-                "statusCode": 200,
-                "headers": default_headers,
-                "body": json.dumps({"message": "CORS ok"})
-            }
+            return response(200, {"message": "CORS ok"})
 
-        # Obtener parámetros
+        #  Obtener rol desde el token de Cognito
+        claims = get_claims(event)
+        role = claims.get("custom:role") if claims else None
+
+        if role != "barber":
+            return response(403, {"error": "Acceso denegado. Solo el barbero puede ver todas las citas."})
+
+        # Obtener parámetro 'date'
         params = event.get("queryStringParameters", {}) or {}
         date_str = params.get("date")
 
         if not date_str:
             return response(400, {"error": "El parámetro 'date' es requerido. Ejemplo: ?date=2025-10-22"})
 
-        # Consultar DynamoDB por todas las citas de esa fecha
+        # Buscar citas del día
         result = table_appointments.scan(
             FilterExpression=Attr("date").eq(date_str)
         )
 
         appointments = result.get("Items", [])
-
-        # Ordenar por hora
         appointments.sort(key=lambda x: x.get("hour", ""))
 
-        # Agrupar resultados por estado (opcional)
         grouped = {
             "scheduled": [a for a in appointments if a.get("status") == "scheduled"],
             "cancelled": [a for a in appointments if a.get("status") == "cancelled"],
@@ -59,6 +59,30 @@ def handler(event, context):
     except Exception as e:
         print("ERROR:", str(e))
         return response(500, {"error": f"Error interno: {str(e)}"})
+
+
+def get_claims(event):
+    
+    """Decodifica el token o extrae claims desde API Gateway Authorizer"""
+
+    claims = event.get("requestContext", {}).get("authorizer", {}).get("claims")
+    if claims:
+        return claims
+
+    # Si se prueba directo desde Function URL o Postman
+    headers = event.get("headers", {})
+    token = headers.get("Authorization") or headers.get("authorization")
+    if not token:
+        return None
+
+    token = token.replace("Bearer ", "").strip()
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        return decoded
+    except Exception as e:
+        print("Error decodificando token:", str(e))
+        return None
+
 
 def response(status, body):
     return {
