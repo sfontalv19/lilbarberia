@@ -136,15 +136,13 @@ resource "aws_lambda_permission" "apigateway_signin_lambda" {
 }
 
 
-
-
 resource "aws_api_gateway_deployment" "lilbarberia_deployment" {
   rest_api_id = aws_api_gateway_rest_api.lilbarberia_api.id
 
   depends_on = [
     aws_api_gateway_integration.signup_integration,
     aws_api_gateway_integration.confirmSignup_integration,
-    aws_api_gateway_inteegration.signin
+    aws_api_gateway_integration.signin
   ]
 }
 
