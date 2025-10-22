@@ -23,7 +23,7 @@ resource "aws_iam_policy" "lambda_combined_policy_barberia" {
       { Effect = "Allow",
         Action = [
           "logs:CreateLogGroup",
-          "logs:CreateLogsStream",
+          "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
         Resource = "arn:aws:logs:${var.region_aws}:${var.aws_account_id}:log-group:/aws/lambda/*"
@@ -57,6 +57,13 @@ resource "aws_iam_policy" "lambda_combined_policy_barberia" {
         ]
         Resource = "*"
       },
+
+      {Effect = "Allow",
+      Action = [
+        "sns:Publish"
+      ],
+      Resource = "*"        
+      }
 
       #apigateway
 
@@ -148,8 +155,9 @@ resource "aws_lambda_function" "lambdas" {
       DYNAMODB_APPOINTMENTS_TABLE = module.dynamodb.appointments_table_name
       DYNAMODB_SERVICES_TABLE     = module.dynamodb.services_table_name
       COGNITO_CLIENT_ID           = module.cognito.app_client_id
+      SNS_TOPIC_ARN               = module.sns.topic_arn
       COGNITO_USER_POOL_ID        = module.cognito.user_pool_id
-      ENVIROMENT                  = var.environment
+      ENVIRONMENT                  = var.environment
 
     }
   }

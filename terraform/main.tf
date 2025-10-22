@@ -113,6 +113,21 @@ module "dynamodb" {
 
 
 
+## sns
+
+module "sns"{
+  source = "./modules/sns"
+  topic_name = "lilbarberia_notifications"
+  display_name  = "LilBarberia notificaciones"
+  barber_phone_number = "+573003508003"
+ 
+
+}
+
+
+
+
+
 ## apigateway
 
 module "apigateway" {
