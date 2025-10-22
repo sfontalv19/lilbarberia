@@ -45,7 +45,7 @@ resource "aws_api_gateway_integration" "signup_integration" {
 
 }
 
-resource "aws_lambda_permission" "apigateway_signup_lambdda" {
+resource "aws_lambda_permission" "apigateway_signup_lambda" {
   statement_id  = "AllowAPIGatewayInvokeSignUp"
   action        = "lambda:InvokeFunction"
   function_name = var.signup_name
@@ -77,7 +77,7 @@ resource "aws_api_gateway_method" "confirmSignup_post" {
 resource "aws_api_gateway_integration" "confirmSignup_integration" {
 
   rest_api_id             = aws_api_gateway_rest_api.lilbarberia_api.id
-  resource_id             = aws_api_gateway_resource.signup_resource.id
+  resource_id             = aws_api_gateway_resource.confirmSignup_resource.id
   http_method             = aws_api_gateway_method.confirmSignup_post.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
@@ -85,27 +85,66 @@ resource "aws_api_gateway_integration" "confirmSignup_integration" {
 
 }
 
-resource "aws_lambda_permission" "apigateway_confirmSignup_lambdda" {
-  statement_id  = "AllowAPIGatewayInvokeSignUp"
+resource "aws_lambda_permission" "apigateway_confirmSignup_lambda" {
+  statement_id  = "AllowAPIGatewayInvokeConfirmSignUp"
   action        = "lambda:InvokeFunction"
   function_name = var.confirmSignup_name
   principal     = "apigateway.amazonaws.com"
 
 
-  source_arn = "${aws_api_gateway_rest_api.lilbarberia_api.execution_arn}/*/POST/confirSignup"
+  source_arn = "${aws_api_gateway_rest_api.lilbarberia_api.execution_arn}/*/POST/confirmSignup"
 }
 
+###signin
 
+resource "aws_api_gateway_resource" "signin_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lilbarberia_api.id
+  parent_id   = aws_api_gateway_rest_api.lilbarberia_api.root_resource_id
+  path_part   = "signin"
+}
+# create method post for signin
+
+resource "aws_api_gateway_method" "signin_post" {
+  rest_api_id   = aws_api_gateway_rest_api.lilbarberia_api.id
+  resource_id   = aws_api_gateway_resource.signin_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+
+}
+
+##integration wuth the signin lambda
+
+resource "aws_api_gateway_integration" "signin_integration" {
+
+  rest_api_id             = aws_api_gateway_rest_api.lilbarberia_api.id
+  resource_id             = aws_api_gateway_resource.signin_resource.id
+  http_method             = aws_api_gateway_method.signin_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.signin_arn
+
+}
+
+resource "aws_lambda_permission" "apigateway_signin_lambda" {
+  statement_id  = "AllowAPIGatewayInvokeSignIn"
+  action        = "lambda:InvokeFunction"
+  function_name = var.signin_name
+  principal     = "apigateway.amazonaws.com"
+
+
+  source_arn = "${aws_api_gateway_rest_api.lilbarberia_api.execution_arn}/*/POST/signin"
+}
 
 
 
 
 resource "aws_api_gateway_deployment" "lilbarberia_deployment" {
   rest_api_id = aws_api_gateway_rest_api.lilbarberia_api.id
-  stage_name  = var.environment
 
   depends_on = [
-    aws_api_gateway_integration.signup_integration
+    aws_api_gateway_integration.signup_integration,
+    aws_api_gateway_integration.confirmSignup_integration,
+    aws_api_gateway_inteegration.signin
   ]
 }
 

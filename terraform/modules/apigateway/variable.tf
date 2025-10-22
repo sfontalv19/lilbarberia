@@ -34,6 +34,17 @@ variable "confirmSignup_arn" {
 }
 
 variable "confirmSignup_name" {
-  description =  "nombre lambda confirmSignup"
+  description =  "name lambda confirmSignup"
   type = string
+}
+
+
+variable "signin_arn"{
+  description = "arn lambda signin"
+  type = string
+}
+
+variable "signin_name"{
+  description = "NAME lambda signin"
+  type = "string"
 }
