@@ -127,8 +127,8 @@ module "apigateway" {
   signup_name = aws_lambda_function.lambdas["signup"].function_name
   confirmSignup_arn = aws_lambda_function.lambdas["confirmSignup"].invoke_arn
   confirmSignup_name = aws_lambda_function.lambdas["confirmSignup"].function_name
-  signin_name = aws_lambda_function.lambdas["signin"].invoke_arn
-  signin_arn = aws_lambda_function.lambdas["signin"].function_name
+  signin_arn = aws_lambda_function.lambdas["signin"].invoke_arn
+  signin_name = aws_lambda_function.lambdas["signin"].function_name
 
 
 
