@@ -21,7 +21,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region_aws
+  region = var.region_aws
 
   default_tags {
     tags = {
@@ -95,6 +95,7 @@ module "cognito" {
   environment            = var.environment
   deploy_id              = var.deploy_id
   cognito_user_pool_name = var.cognito_user_pool_name
+  cognito_user_pool_arn  = module.cognito.user_pool_arn
   region                 = var.region_aws
 }
 
@@ -107,5 +108,26 @@ module "dynamodb" {
   deploy_id              = var.deploy_id
   cognito_user_pool_arn  = module.cognito.user_pool_arn
   cognito_user_pool_name = var.cognito_user_pool_name
+
+}
+
+
+
+## apigateway
+
+module "apigateway" {
+  source                 = "./modules/apigateway"
+  environment            = var.environment
+  deploy_id              = var.deploy_id
+  cognito_user_pool_arn  = module.cognito.user_pool_arn
+  cognito_user_pool_name = var.cognito_user_pool_name
+
+
+  signup_arn  = aws_lambda_function.lambdas["signup"].invoke_arn
+  signup_name = aws_lambda_function.lambdas["signup"].function_name
+  confirmSignup_arn = aws_lambda_function.lambdas["confirmSignup"].invoke_arn
+  confirmSignup_name = aws_lambda_function.lambdas["confirmSignup"].function_name
+
+
 
 }

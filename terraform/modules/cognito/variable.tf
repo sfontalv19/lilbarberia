@@ -6,7 +6,7 @@ variable region {
 
 variable environment {
     type = string
-    default = "dev"
+    default = "prod"
 }
 
 variable deploy_id {
@@ -17,6 +17,11 @@ variable deploy_id {
 variable "cognito_user_pool_name" {
     type = string
     description = "cognito_user_pool_name"
+}
+
+variable "cognito_user_pool_arn"{
+    type = string
+    description = "cognito_user_pool_arn"
 }
 
 

@@ -17,7 +17,7 @@ variable "project" {
 variable "stage_name" {
   description = "Nombre del entorno"
   type        = string
-  default     = "dev"
+  default     = "prod"
 }
 
 ## cognito 
