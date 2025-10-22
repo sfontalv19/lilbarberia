@@ -142,7 +142,7 @@ resource "aws_api_gateway_deployment" "lilbarberia_deployment" {
   depends_on = [
     aws_api_gateway_integration.signup_integration,
     aws_api_gateway_integration.confirmSignup_integration,
-    aws_api_gateway_integration.signin
+    aws_api_gateway_integration.signin_integration
   ]
 }
 
