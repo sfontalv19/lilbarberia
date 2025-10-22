@@ -46,5 +46,5 @@ variable "signin_arn"{
 
 variable "signin_name"{
   description = "NAME lambda signin"
-  type = "string"
+  type = string
 }
