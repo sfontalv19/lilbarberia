@@ -1,7 +1,7 @@
 import json, os, base64, re, boto3
 from botocore.exceptions import ClientError
 
-# Headers CORS
+# Headers CORS actualizados
 default_headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
@@ -9,14 +9,16 @@ default_headers = {
 }
 
 def resp(status, body):
+    """Genera una respuesta HTTP con headers CORS"""
     return {
         "statusCode": status,
         "headers": default_headers,
-        "body": json.dumps(body)}
+        "body": json.dumps(body),
+    }
 
 def handler(event, context):
     try:
-        # Manejar preflight CORS
+        # Manejo de preflight (CORS)
         method = event.get("httpMethod") or event.get("requestContext", {}).get("http", {}).get("method")
         if method == "OPTIONS":
             return resp(200, {"ok": True})
@@ -27,17 +29,17 @@ def handler(event, context):
             raw = base64.b64decode(raw).decode("utf-8")
         body = json.loads(raw if isinstance(raw, str) else json.dumps(raw))
 
-        # Campos requeridos
-        for f in ["email", "password", "phone", "client"]:
+        # Validar campos requeridos (client ya no es obligatorio)
+        for f in ["email", "password", "phone"]:
             if f not in body:
                 return resp(400, {"error": f"missing required field: {f}"})
 
         email = str(body["email"]).strip()
         password = str(body["password"]).strip()
         phone = str(body["phone"]).strip()
-        client = body["client"]
+        client = body.get("client", True)  # Por defecto True
 
-        # Validaciones
+        # Validaciones básicas
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             return resp(400, {"error": "invalid email format"})
         if len(password) < 8:
@@ -53,7 +55,7 @@ def handler(event, context):
 
         cognito = boto3.client("cognito-idp", region_name=region)
 
-        # Validar si ya existe
+        # Verificar si ya existe
         try:
             cognito.admin_get_user(UserPoolId=user_pool_id, Username=email)
             return resp(400, {"error": "user already exists"})
@@ -69,7 +71,6 @@ def handler(event, context):
                 UserAttributes=[
                     {"Name": "email", "Value": email},
                     {"Name": "phone_number", "Value": phone},
-                    # {"Name": "custom:client", "Value": str(bool(client)).lower()},  # si tienes schema custom
                 ],
             )
         except ClientError as e:
@@ -79,16 +80,12 @@ def handler(event, context):
                 return resp(400, {"error": "user already exists"})
             return resp(500, {"error": f"cognito sign_up failed: {code}"})
 
-        # Confirmar (opcional, solo si quieres que quede activo de una)
-        try:
-            cognito.admin_confirm_sign_up(UserPoolId=user_pool_id, Username=email)
-        except ClientError as e:
-            print("Confirm ERROR:", e.response)
-            # Si no tienes permiso, el usuario quedará "UNCONFIRMED" y usará el flujo de código.
 
+        # Respuesta final al frontend
         return resp(201, {
-            "message": "user registered successfully",
-            "email": email
+            "message": "user registered and confirmed successfully",
+            "email": email,
+            "is_client": client
         })
 
     except Exception as e:
