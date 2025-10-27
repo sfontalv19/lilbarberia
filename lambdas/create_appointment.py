@@ -98,7 +98,7 @@ def handler(event, context):
 
         table_appointments.put_item(Item=item)
 
-        # ✅ Enviar notificación SNS con validación
+        # Enviar notificación SNS con validación
         try:
             if not SNS_TOPIC_ARN:
                 print("WARNING: SNS_TOPIC_ARN no está configurado. No se enviará notificación.")

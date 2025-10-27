@@ -5,8 +5,9 @@ import os
 
 default_header = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "*",
-    "Access-Control-Allow-Header": "*"
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json",
 }
 
 def handler(event, context):
