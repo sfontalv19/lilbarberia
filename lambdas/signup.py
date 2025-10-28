@@ -1,6 +1,10 @@
 import json, os, base64, re, boto3
 from botocore.exceptions import ClientError
 
+REGION = os.getenv("AWS_REGION", "us-east-1")
+COGNITO_CLIENT_ID = os.getenv("COGNITO_CLIENT_ID")
+COGNITO_USER_POOL_ID = os.getenv("COGNITO_USER_POOL_ID")
+
 # Headers CORS actualizados
 default_headers = {
     "Access-Control-Allow-Origin": "*",
@@ -29,43 +33,42 @@ def handler(event, context):
             raw = base64.b64decode(raw).decode("utf-8")
         body = json.loads(raw if isinstance(raw, str) else json.dumps(raw))
 
-        # Validar campos requeridos (client ya no es obligatorio)
+        # Validar campos requeridos
         for f in ["email", "password", "phone"]:
             if f not in body:
                 return resp(400, {"error": f"missing required field: {f}"})
 
         email = str(body["email"]).strip()
         password = str(body["password"]).strip()
-        phone = str(body["phone"]).strip()
-        client = body.get("client", True)  # Por defecto True
+        phone = str(body.get("phone", "")).strip()
+        client = body.get("client", True)
 
-        # Validaciones básicas
+        # Validaciones
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             return resp(400, {"error": "invalid email format"})
         if len(password) < 8:
             return resp(400, {"error": "password must be at least 8 characters long"})
         if not phone.startswith("+"):
-            phone = "+57" + phone  # prefijo Colombia
+            phone = "+57" + phone.lstrip("0").strip()  # prefijo Colombia
 
-        region = os.getenv("AWS_REGION", "us-east-1")
-        client_id = os.getenv("COGNITO_CLIENT_ID")
-        user_pool_id = os.getenv("COGNITO_USER_POOL_ID")
-        if not client_id or not user_pool_id:
+        # Validar configuración
+        if not COGNITO_CLIENT_ID or not COGNITO_USER_POOL_ID:
             return resp(500, {"error": "missing cognito configuration"})
 
-        cognito = boto3.client("cognito-idp", region_name=region)
+        # Cliente Cognito
+        cognito = boto3.client("cognito-idp", region_name=REGION)
 
         # Verificar si ya existe
         try:
-            cognito.admin_get_user(UserPoolId=user_pool_id, Username=email)
+            cognito.admin_get_user(UserPoolId=COGNITO_USER_POOL_ID, Username=email)
             return resp(400, {"error": "user already exists"})
         except cognito.exceptions.UserNotFoundException:
             pass
 
-        # Crear usuario en Cognito
+        # Crear usuario
         try:
             cognito.sign_up(
-                ClientId=client_id,
+                ClientId=COGNITO_CLIENT_ID,
                 Username=email,
                 Password=password,
                 UserAttributes=[
@@ -80,8 +83,6 @@ def handler(event, context):
                 return resp(400, {"error": "user already exists"})
             return resp(500, {"error": f"cognito sign_up failed: {code}"})
 
-
-        # Respuesta final al frontend
         return resp(201, {
             "message": "user registered and confirmed successfully",
             "email": email,
