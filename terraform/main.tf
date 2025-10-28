@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.4.2"
+  required_version = ">= 1.5.0"
 
   backend "s3" {
     bucket  = "silviobarberia-app"
@@ -11,7 +11,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 5.40.0"
     }
     awscc = {
       source  = "hashicorp/awscc"
@@ -115,12 +115,12 @@ module "dynamodb" {
 
 ## sns
 
-module "sns"{
-  source = "./modules/sns"
-  topic_name = "lilbarberia_notifications"
-  display_name  = "LilBarberia notificaciones"
+module "sns" {
+  source              = "./modules/sns"
+  topic_name          = "lilbarberia_notifications"
+  display_name        = "LilBarberia notificaciones"
   barber_phone_number = "+573003508003"
- 
+
 
 }
 
@@ -149,12 +149,12 @@ module "apigateway" {
   cognito_user_pool_name = var.cognito_user_pool_name
 
 
-  signup_arn  = aws_lambda_function.lambdas["signup"].invoke_arn
-  signup_name = aws_lambda_function.lambdas["signup"].function_name
-  confirmSignup_arn = aws_lambda_function.lambdas["confirmSignup"].invoke_arn
+  signup_arn         = aws_lambda_function.lambdas["signup"].invoke_arn
+  signup_name        = aws_lambda_function.lambdas["signup"].function_name
+  confirmSignup_arn  = aws_lambda_function.lambdas["confirmSignup"].invoke_arn
   confirmSignup_name = aws_lambda_function.lambdas["confirmSignup"].function_name
-  signin_arn = aws_lambda_function.lambdas["signin"].invoke_arn
-  signin_name = aws_lambda_function.lambdas["signin"].function_name
+  signin_arn         = aws_lambda_function.lambdas["signin"].invoke_arn
+  signin_name        = aws_lambda_function.lambdas["signin"].function_name
 
 
 

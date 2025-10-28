@@ -70,3 +70,8 @@ variable "github_token" {
   type        = string
   sensitive   = true
 }
+variable "project_name" {
+  description = "Nombre del proyecto"
+  type        = string
+  default     = "lilbarberia"
+}

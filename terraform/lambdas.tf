@@ -58,11 +58,11 @@ resource "aws_iam_policy" "lambda_combined_policy_barberia" {
         Resource = "*"
       },
 
-      {Effect = "Allow",
-      Action = [
-        "sns:Publish"
-      ],
-      Resource = "*"        
+      { Effect = "Allow",
+        Action = [
+          "sns:Publish"
+        ],
+        Resource = "*"
       }
 
       #apigateway
@@ -157,7 +157,7 @@ resource "aws_lambda_function" "lambdas" {
       COGNITO_CLIENT_ID           = module.cognito.app_client_id
       SNS_TOPIC_ARN               = module.sns.topic_arn
       COGNITO_USER_POOL_ID        = module.cognito.user_pool_id
-      ENVIRONMENT                  = var.environment
+      ENVIRONMENT                 = var.environment
 
     }
   }

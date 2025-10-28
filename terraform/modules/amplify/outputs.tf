@@ -12,7 +12,7 @@ output "amplify_default_domain" {
 
 output "amplify_main_branch_url" {
   description = "URL de despliegue de la rama main"
-  value       = aws_amplify_branch.main.web_url
+  value       = "https://${aws_amplify_branch.main.branch_name}.${aws_amplify_app.frontend.default_domain}"
 }
 
 

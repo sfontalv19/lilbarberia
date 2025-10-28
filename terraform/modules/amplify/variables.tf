@@ -22,7 +22,7 @@ variable "github_token" {
   description = "Token personal de GitHub con permisos repo y admin:repo_hook"
   type        = string
   sensitive   = true
-  
+
 }
 
 variable "api_gateway_url" {
