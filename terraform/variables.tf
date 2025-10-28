@@ -62,3 +62,11 @@ variable "dynamodb_tables" {
     auth  = "auth"
   }
 }
+
+##amplify
+
+variable "github_token" {
+  description = "Token personal de GitHub para conectar Amplify"
+  type        = string
+  sensitive   = true
+}
