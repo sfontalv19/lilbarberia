@@ -29,3 +29,6 @@ variable "api_gateway_url" {
   description = "URL del API Gateway del backend"
   type        = string
 }
+
+
+
