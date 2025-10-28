@@ -127,6 +127,18 @@ module "sns"{
 
 
 
+##amplify
+
+module "amplify" {
+  source          = "./modules/amplify"
+  project_name    = var.project_name
+  environment     = var.environment
+  github_repo_url = "https://github.com/sfontalv19/lilbarberia_ui.git"
+  github_token    = var.github_token
+  api_gateway_url = module.backend.api_gateway_url
+}
+
+
 
 ## apigateway
 
